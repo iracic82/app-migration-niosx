@@ -1,5 +1,5 @@
 locals {
-  infoblox_ami_id = "ami-008772a29d4c2f558"
+  infoblox_ami_id = "ami-08659b5070b66249d"
 }
 
 # MGMT NIC (Primary NIC)

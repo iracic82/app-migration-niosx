@@ -23,3 +23,7 @@ variable "windows_admin_password" {
   type        = string
   sensitive   = true
 }
+variable "subnet_b_cidr" {
+  type    = string
+  default = "10.100.2.0/24"
+}

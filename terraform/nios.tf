@@ -1,19 +1,9 @@
 locals {
-  infoblox_ami_id = "ami-08659b5070b66249d"
+  infoblox_ami_id  = "ami-08659b5070b66249d" # NIOS-X AMI ID
+  join_token       = var.infoblox_join_token
 }
 
-# MGMT NIC (Primary NIC)
-resource "aws_network_interface" "gm_mgmt" {
-  subnet_id       = aws_subnet.public.id
-  private_ips     = ["10.100.0.201"]
-  security_groups = [aws_security_group.rdp_sg.id]
-
-  tags = {
-    Name = "gm-mgmt-nic"
-  }
-}
-
-# LAN1 NIC (Private-only)
+# LAN1 NIC (used for MGMT + LAN)
 resource "aws_network_interface" "gm_lan1" {
   subnet_id       = aws_subnet.public.id
   private_ips     = ["10.100.0.200"]
@@ -31,29 +21,22 @@ resource "aws_instance" "gm" {
   key_name      = aws_key_pair.rdp.key_name
 
   network_interface {
-    network_interface_id = aws_network_interface.gm_mgmt.id
+    network_interface_id = aws_network_interface.gm_lan1.id
     device_index         = 0
   }
 
-  network_interface {
-    network_interface_id = aws_network_interface.gm_lan1.id
-    device_index         = 1
-  }
-
   user_data = <<-EOF
-    #infoblox-config
-    temp_license: nios IB-V825 enterprise dns dhcp cloud
-    remote_console_enabled: y
-    default_admin_password: "Proba123!"
-    lan1:
-      v4_addr: 10.100.0.200
-      v4_netmask: 255.255.255.0
-      v4_gw: 10.100.0.1
-    mgmt:
-      v4_addr: 10.100.0.201
-      v4_netmask: 255.255.255.0
-      v4_gw: 10.100.0.1
+    #cloud-config
+    host_setup:
+      jointoken: "${local.join_token}"
   EOF
+
+  metadata_options {
+    http_tokens              = "optional"
+    http_put_response_hop_limit = 1
+    http_endpoint            = "enabled"
+    instance_metadata_tags   = "enabled"
+  }
 
   tags = {
     Name = "Infoblox-GM"
@@ -62,15 +45,16 @@ resource "aws_instance" "gm" {
   depends_on = [aws_internet_gateway.gw]
 }
 
-# EIP only for LAN NIC
+# EIP for LAN1 (public access to GM)
 resource "aws_eip" "gm_eip" {
   domain = "vpc"
+
   tags = {
-    Name = "gm-eip-mgmt"
+    Name = "gm-eip-lan1"
   }
 }
 
-resource "aws_eip_association" "gm_eip_assoc_mgmt" {
+resource "aws_eip_association" "gm_eip_assoc_lan1" {
   network_interface_id = aws_network_interface.gm_lan1.id
   allocation_id        = aws_eip.gm_eip.id
   private_ip_address   = "10.100.0.200"

@@ -83,6 +83,15 @@ try:
     status = response['ChangeInfo']['Status']
     log(f"✅  A record created: {fqdn} -> {dc1_ip}")
     log(f"📡  Change status: {status}")
+
+    # ---------------------------
+    # Write FQDN to file
+    # ---------------------------
+    fqdn_file = "created_fqdn.txt"
+    with open(fqdn_file, "w") as f:
+        f.write(fqdn + "\n")
+    log(f"📝 FQDN written to {fqdn_file}")
+
 except Exception as e:
     log(f"❌ Failed to create A record {fqdn}: {e}")
     sys.exit(1)

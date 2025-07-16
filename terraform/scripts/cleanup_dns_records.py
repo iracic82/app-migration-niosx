@@ -17,6 +17,18 @@ def log(message):
     log_lines.append(message + "\n")
 
 # ---------------------------
+# Read FQDN + IP from file
+# ---------------------------
+fqdn_file = "created_fqdn.txt"
+try:
+    with open(fqdn_file, "r") as f:
+        line = f.read().strip()
+        fqdn, dc1_ip = line.split()
+except Exception as e:
+    log(f"❌ ERROR: Failed to read FQDN and IP from {fqdn_file}: {e}")
+    sys.exit(1)
+
+# ---------------------------
 # AWS credentials from env vars
 # ---------------------------
 aws_access_key_id = os.getenv("DEMO_AWS_ACCESS_KEY_ID")
@@ -25,20 +37,8 @@ region = os.getenv("DEMO_AWS_REGION", "us-east-1")
 hosted_zone_id = os.getenv("DEMO_HOSTED_ZONE_ID")
 
 if not aws_access_key_id or not aws_secret_access_key or not hosted_zone_id:
-    log("❌ ERROR: AWS credentials or Hosted Zone ID not set")
+    log("❌ ERROR: Missing AWS credentials or Hosted Zone ID")
     sys.exit(1)
-
-# ---------------------------
-# Required env vars
-# ---------------------------
-participant_id = os.getenv("INSTRUQT_PARTICIPANT_ID")
-dc1_ip = os.getenv("DC1_IP")
-
-if not participant_id or not dc1_ip:
-    log("❌ ERROR: INSTRUQT_PARTICIPANT_ID and DC1_IP must be set")
-    sys.exit(1)
-
-fqdn = f"{participant_id}-client.iracictechguru.com."
 
 # ---------------------------
 # Create boto3 session
@@ -48,7 +48,6 @@ session = boto3.Session(
     aws_secret_access_key=aws_secret_access_key,
     region_name=region
 )
-
 route53 = session.client("route53")
 
 # ---------------------------

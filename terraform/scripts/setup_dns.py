@@ -85,12 +85,12 @@ try:
     log(f"📡  Change status: {status}")
 
     # ---------------------------
-    # Write FQDN to file
+    # Save FQDN and IP to file
     # ---------------------------
     fqdn_file = "created_fqdn.txt"
     with open(fqdn_file, "w") as f:
-        f.write(fqdn + "\n")
-    log(f"📝 FQDN written to {fqdn_file}")
+        f.write(f"{fqdn} {dc1_ip}\n")
+    log(f"💾 FQDN and IP written to {fqdn_file}")
 
 except Exception as e:
     log(f"❌ Failed to create A record {fqdn}: {e}")

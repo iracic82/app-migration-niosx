@@ -12,7 +12,7 @@ realm:
 
 blocks:
   - name: "AWS"
-    address: "10.20.0.0"
+    address: "10.100.0.0"
     cidr: 16
     comment: "Top-level AWS block"
     tags:
@@ -20,7 +20,7 @@ blocks:
       owner: "igor"
 
   - name: "Azure"
-    address: "10.10.0.0"
+    address: "10.200.0.0"
     cidr: 16
     comment: "Top-level Azure block"
     tags:

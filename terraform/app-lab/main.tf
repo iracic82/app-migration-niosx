@@ -182,6 +182,11 @@ data "bloxone_ipam_subnets" "existing" {
     name = "aws-vpc-subnet"
   }
 }
+data "bloxone_dns_auth_zones" "infolab" {
+  filters = {
+    fqdn = "infolab.com."
+  }
+}
 
 # -------------------------------------
 # Allocate an IP Address from the Safe Range
@@ -245,6 +250,28 @@ resource "aws_instance" "app2" {
     Name = "app2"
     Role = "app"
   }
+}
+
+
+
+resource "bloxone_dns_a_record" "app2_dns_record" {
+  name_in_zone = "app-cloud"
+  zone         = data.bloxone_dns_auth_zones.infolab.results[0].id
+
+  rdata = {
+    address = bloxone_ipam_address.app2_ip.address
+  }
+
+  ttl      = 3600
+  comment  = "App deployed to AWS"
+  disabled = false
+
+  tags = {
+    environment = "aws"
+    project     = var.project_name
+  }
+
+  depends_on = [bloxone_ipam_address.app2_ip]
 }
 
 # -------------------------------------

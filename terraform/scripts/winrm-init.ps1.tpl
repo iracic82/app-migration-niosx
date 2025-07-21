@@ -73,6 +73,18 @@ foreach ($rule in $ports) {
     }
 }
 
+
+# --- Download DNS Ratio Test Script to Documents folder ---
+Write-Host "Downloading test.ps1 to Documents..."
+try {
+    $url = "https://infoblox-igor.s3.eu-west-1.amazonaws.com/test.ps1"
+    $destination = "C:\Users\Administrator\Documents\test.ps1"
+    Invoke-WebRequest -Uri $url -OutFile $destination
+    Write-Host "✅ Script saved to $destination"
+} catch {
+    Write-Host "❌ Script download failed: $_"
+}
+
 # --- Restart WinRM ---
 Write-Host "Restarting WinRM..."
 try {

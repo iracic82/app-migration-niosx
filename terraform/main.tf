@@ -254,7 +254,7 @@ resource "aws_route53_zone" "private" {
 
 resource "aws_route53_record" "app" {
   zone_id = aws_route53_zone.private.zone_id
-  name    = "app.infolab.com"
+  name    = "app-old.infolab.com"
   type    = "A"
   ttl     = 60
   records = ["10.100.0.120"]

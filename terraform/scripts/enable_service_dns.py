@@ -63,12 +63,13 @@ class InfobloxSession:
         print(json.dumps(payload, indent=2))
 
         resp = self.session.post(url, headers=headers, json=payload)
-        if resp.status_code != 200:
+        # treat any 2xx as success
+        if not (200 <= resp.status_code < 300):
             print(f"❌ Failed to enable DNS. Status: {resp.status_code}")
             print(resp.text)
             resp.raise_for_status()
 
-        print("✅ DNS service enabled.")
+        print("✅ DNS service enabled.  (status {})".format(resp.status_code))
 
     def _auth_headers(self):
         return {"Content-Type": "application/json", "Authorization": f"Bearer {self.jwt}"}

@@ -9,7 +9,8 @@ vpn_payload:
     name: DEMO
     capabilities: 
         - type: dns
-          
+    tags:
+        owner: iracic@infoblox.com       
     
 
   access_locations:

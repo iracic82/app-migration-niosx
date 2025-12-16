@@ -31,7 +31,7 @@ class InfobloxSession:
         self._save_to_file("jwt.txt", self.jwt)
         print(f"✅ Switched to sandbox {sandbox_id} and updated JWT")
 
-    def create_api_key_and_export_env(self, key_name="Instruqt", expiration="2025-12-10T18:44:50.121Z"):
+    def create_api_key_and_export_env(self, key_name="Instruqt", expiration="2026-12-10T18:44:50.121Z"):
         url = f"{self.base_url}/v2/current_api_keys"
         headers = self._auth_headers()
         payload = {
